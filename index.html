@@ -361,14 +361,31 @@ table.rt td:last-child,table.rt th:last-child{text-align:right}
    FIREBASE CONFIG
    Replace all values below with your own from
    Firebase Console → Project Settings
+   // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBeRbwFpCJ559OSeu2CPXiiceLvEf-8EWg",
+  authDomain: "echampions-result.firebaseapp.com",
+  projectId: "echampions-result",
+  storageBucket: "echampions-result.firebasestorage.app",
+  messagingSenderId: "997465953684",
+  appId: "1:997465953684:web:220fdac384389da634ab81"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 ══════════════════════════════════════════════ */
 const firebaseConfig = {
-  apiKey:            "PASTE_YOUR_API_KEY_HERE",
-  authDomain:        "PASTE_YOUR_AUTH_DOMAIN_HERE",
-  projectId:         "PASTE_YOUR_PROJECT_ID_HERE",
-  storageBucket:     "PASTE_YOUR_STORAGE_BUCKET_HERE",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID_HERE",
-  appId:             "PASTE_YOUR_APP_ID_HERE"
+  apiKey:            "AIzaSyBeRbwFpCJ559OSeu2CPXiiceLvEf-8EWg",
+  authDomain:        "echampions-result.firebaseapp.com",
+  projectId:         "echampions-result",
+  storageBucket:     "echampions-result.firebasestorage.app",
+  messagingSenderId: "997465953684",
+  appId:             "1:997465953684:web:220fdac384389da634ab81"
 };
 
 firebase.initializeApp(firebaseConfig);
