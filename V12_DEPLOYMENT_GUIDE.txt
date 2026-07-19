@@ -1,0 +1,204 @@
+==============================
+E-CHAMPIONS RESULT MANAGER v12.0
+Deployment Guide
+==============================
+
+This guide covers ONLY what changed since v11. Your
+Firebase project, login accounts, and teacher data
+are untouched — this is a file replacement plus one
+small rules update.
+
+------------------------------
+STEP 1 — REPLACE THE FILE ON GITHUB
+------------------------------
+
+STEP 1a.
+Go to your GitHub repository.
+
+STEP 1b.
+Open index.html.
+
+STEP 1c.
+Tap the pencil (Edit) icon.
+
+STEP 1d.
+Select all existing content, delete it.
+
+STEP 1e.
+Paste in the full content of echampions_v12.html.
+
+STEP 1f.
+Scroll down, tap "Commit changes".
+
+STEP 1g.
+Wait 1-2 minutes. Your live link updates
+automatically — same link as before, nothing
+to re-share with teachers.
+
+------------------------------
+STEP 2 — UPDATE FIRESTORE RULES (REQUIRED)
+------------------------------
+
+v12 adds the Head Teacher Comment Bank feature,
+which needs one new permission added to your rules.
+
+STEP 2a.
+Go to Firebase Console → your project.
+
+STEP 2b.
+Tap Firestore Database → Rules tab.
+
+STEP 2c.
+Replace everything with the rules below exactly:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuth() { return request.auth != null; }
+    function getUser() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isAdmin() { return isAuth() && getUser().role == 'admin'; }
+    function isTeacher() { return isAuth() && getUser().role == 'teacher'; }
+
+    match /users/{uid} {
+      allow read: if isAuth() && (request.auth.uid == uid || isAdmin());
+      allow write: if isAdmin();
+      allow update: if isAuth() && request.auth.uid == uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastLogin']);
+    }
+
+    match /classdata/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isTeacher() && (resource == null || resource.data.teacherUid == request.auth.uid);
+      allow create: if isTeacher() && request.resource.data.teacherUid == request.auth.uid;
+    }
+
+    match /settings/{doc} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+
+    match /commentbanks/{className} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+  }
+}
+
+STEP 2d.
+Tap "Publish".
+
+>> IMPORTANT: WITHOUT THIS STEP, THE HEAD TEACHER
+   COMMENT BANK WILL FAIL SILENTLY — REPORT CARDS
+   WILL STILL PRINT, JUST WITHOUT AN ASSIGNED
+   COMMENT. NOT DANGEROUS, JUST INCOMPLETE.
+
+------------------------------
+STEP 3 — SET UP HEAD TEACHER COMMENTS
+------------------------------
+
+This is new and needs to be filled in once per class
+before it does anything useful.
+
+STEP 3a.
+Sign in as admin on your live link.
+
+STEP 3b.
+Tap the new "Comments" tab at the top.
+
+STEP 3c.
+Select a class from the dropdown.
+
+STEP 3d.
+Paste in as many comments as you like — one per
+line. 30 or more gives good variety.
+
+STEP 3e.
+Tap "Save Comments".
+
+STEP 3f.
+Repeat for every class, one at a time.
+
+>> IMPORTANT: EACH CLASS HAS ITS OWN SEPARATE BANK.
+   A COMMENT SAVED FOR BASIC 5 DOES NOT APPEAR FOR
+   BASIC 1 OR ANY OTHER CLASS.
+
+Until this is done for a class, that class's report
+cards will simply print with the comment field left
+blank — nothing breaks, it just has no comment yet.
+
+------------------------------
+WHAT'S NEW — QUICK SUMMARY
+------------------------------
+
+REPORT CARD
+* Rebuilt to match your paper template exactly
+* Portrait, single page, no more oversized landscape
+  or awkward page-splitting
+* Font size now scales smoothly — classes with fewer
+  subjects (Creche, KG) print noticeably larger and
+  fuller than Basic 1-5
+* Class Teacher's comment: 2 lines
+* Head Teacher's comment: 2 lines, auto-filled from
+  the new per-class comment bank
+* Marks Obtained shown in bold
+* Position in Class field present but left blank on
+  the printed page, as before
+
+HEAD TEACHER COMMENT BANK (NEW)
+* Admin tab to manage comments per class
+* Each pupil is randomly assigned ONE comment the
+  first time their report card prints
+* That same comment stays fixed for that pupil for
+  the rest of the term — reprinting never changes it
+
+SCORE ENTRY
+* Arrow keys now work on laptop/desktop: Up/Down
+  moves between subjects, Left/Right moves between
+  Test 1 / Test 2 / Exam (only when the cursor is at
+  the very start or end of the number, so normal
+  typing still works fine)
+* Invalid scores (negative, above the maximum, or
+  odd decimals) are now automatically corrected the
+  moment you tap away from the field — not just
+  flagged in red
+
+BUG FIXES
+* "My Past Terms & Classes" was likely failing
+  silently due to a missing database index — fixed,
+  no longer needs that index at all
+* "Start new term / class" now asks for confirmation
+  before clearing your screen
+* Re-uploading the same CSV file now works correctly
+* Teacher and Admin score calculations now share one
+  identical function, so they can never drift apart
+
+------------------------------
+TESTING CHECKLIST
+------------------------------
+
+After deploying, confirm:
+
+[ ] Live link still opens and shows the login screen
+[ ] Signing in as admin still works
+[ ] Signing in as a teacher still works
+[ ] "Comments" tab appears in the admin nav
+[ ] You can save comments for at least one class
+[ ] A teacher can print a report card and see a
+    head teacher comment appear
+[ ] Printing a Basic 5 pupil (18 subjects) fits
+    cleanly on one page
+[ ] Printing a Creche pupil (7 subjects) shows
+    visibly larger, fuller text
+[ ] Arrow keys move between score fields on a
+    laptop/computer
+[ ] Typing a negative number or an out-of-range
+    score self-corrects when you tap away
+
+If any of these fail, note exactly what you see and
+we'll fix it before wider rollout.
+
+==============================
+END OF GUIDE
+E-Champions Nursery and Primary School
+Result Manager v12.0 — Built by EDA-NI-MI
+==============================
