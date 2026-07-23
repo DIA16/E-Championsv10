@@ -4,7 +4,7 @@ A free, phone-first result management system built for **E-Champions Nursery and
 
 Teachers enter pupil scores directly from their phones. Results are calculated, ranked, and graded automatically, saved securely to the cloud, and printed as official report cards — no spreadsheets, no manual computation, no paperwork lost.
 
-**Live app:** _add your GitHub Pages / Netlify link here_
+**Live app:** https://dia16.github.io/E-Championsv10/
 
 ---
 
